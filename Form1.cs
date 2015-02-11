@@ -385,7 +385,6 @@ namespace asgn5v1
 
 		void MenuNewDataOnClick(object obj, EventArgs ea)
 		{
-			//MessageBox.Show("New Data item clicked.");
 			gooddata = GetNewData();
 			RestoreInitialImage();			
 		}
@@ -642,31 +641,28 @@ namespace asgn5v1
         private void BuildInitialCenterMatrix()
         {
 
-            // Begin by finding center of unmodified shape
-            double minShapeX = findMin(vertices, COL_X);
-            double maxShapeX = findMax(vertices, COL_X);
-            double minShapeY = findMin(vertices, COL_Y);
-            double maxShapeY = findMax(vertices, COL_Y);
-            double shapecenterX = ( minShapeX + maxShapeX ) / 2;
-            double shapecenterY = (minShapeY + maxShapeY) / 2;
+            double shapecenterX = findMidPoint(vertices, COL_X);
+            double shapecenterY = findMidPoint(vertices, COL_Y);
 
-            // Start keeping track of the baseline to return to for shearing
-            shearBaselineHeight = maxShapeY - minShapeY;
+            // Reflect the shape
+            ctrans = reflect(ctrans, 'x');
 
+            
             // Find center of screen
             double screenCenterX = this.Size.Width / 2.0;
             double screenCenterY = this.Size.Height / 2.0;
 
             // Translate center to 0,0
-            ctrans = translate(ctrans, -shapecenterX, -shapecenterY);
-            shearBaselineHeight += -shapecenterY;
+            ctrans = translate(ctrans, -shapecenterX, shapecenterY);
+            
+            // Start keeping track of its height (previously negative due to reflection)
+            shearBaselineHeight += shapecenterY;
 
-            // Reflect the shape
-            ctrans = reflect(ctrans, 'x');
+
 
             // Scale it so that the height of the shape is Window.Height / 2
             double scaleFinalSize = this.Size.Height / 2.0;
-            double currentShapeHeight = (findMax(vertices, 1) - findMin(vertices, 1));
+            double currentShapeHeight = findMax(vertices, COL_Y) - findMin(vertices, COL_Y);
             double scalefactor = scaleFinalSize / currentShapeHeight;
             ctrans = scale(ctrans, scalefactor);
 
@@ -836,15 +832,24 @@ namespace asgn5v1
         #endregion
 
         #region Helper Functions
+        private double findMidPoint(double[,] points, int column)
+        {
+            if (points.Length >= 4)
+            {
+                return points[0, column];
+            }
+            return 0;
+        }
+
         private double findMin(double[,] points, int column)
         {
             double min = Double.MaxValue;
             if (points.Length >= column + 1)
             {
-                min = points[0, column];
-                if (points.Length >= (column + 1) * 2)
+                min = points[1, column];
+                if (points.Length >= (column + 1) * 3)
                 {
-                    for (int i = 1; i < points.Length / 4; ++i)
+                    for (int i = 2; i < points.Length / 4; ++i)
                     {
                         if (points[i, 0] == -1) // Sentinel stop value
                         {
@@ -859,18 +864,17 @@ namespace asgn5v1
             }
             return min;
         }
-
         private double findMax(double[,] points, int column)
         {
             double max = Double.MinValue;
             if (points.Length >= column + 1)
             {
                 // At least 1 element
-                max = points[0, column];
-                if(points.Length >= (column + 1) * 2)
+                max = points[1, column];
+                if (points.Length >= (column + 1) * 3)
                 {
                     // At least 1 element in the next row.
-                    for (int i = 1; i < points.Length / 4; ++i)
+                    for (int i = 2; i < points.Length / 4; ++i)
                     {
                         if (points[i, 0] == -1) // Sentinel stop value
                         {
@@ -882,11 +886,9 @@ namespace asgn5v1
                         }
                     }
                 }
-                
             }
             return max;
         }
-
         private double[,] multiply4x4Matrix(double[,] matrix1, double[,] matrix2)
         {
             double[,] newTnet = new double[4, 4];
