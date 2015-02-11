@@ -49,6 +49,10 @@ namespace asgn5v1
 		private System.Windows.Forms.ToolBarButton resetbtn;
 		private System.Windows.Forms.ToolBarButton exitbtn;
 		int[,] lines;
+        Point currentShapeMiddle = new Point(0, 0);
+        const int COL_X = 0;
+        const int COL_Y = 1;
+        const int COL_Z = 2;
 
 		public Transformer()
 		{
@@ -63,7 +67,7 @@ namespace asgn5v1
 			this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 			this.SetStyle(ControlStyles.UserPaint, true);
 			this.SetStyle(ControlStyles.DoubleBuffer, true);
-			Text = "COMP 4560:  Assignment 5 (200830) (Your Name Here)";
+			Text = "COMP 4560:  Assignment 5 (201502) (Alan Lai)";
 			ResizeRedraw = true;
 			BackColor = Color.Black;
 			MenuItem miNewDat = new MenuItem("New &Data...",
@@ -359,7 +363,7 @@ namespace asgn5v1
                         (int)scrnpts[lines[i, 1], 0], (int)scrnpts[lines[i, 1], 1]);
                 }
 
-
+                grfx.FillRectangle(Brushes.Red, this.Size.Width / 2, this.Size.Height / 2, 3, 3);
             } // end of gooddata block	
 		} // end of OnPaint
 
@@ -384,7 +388,13 @@ namespace asgn5v1
 		void RestoreInitialImage()
 		{
 			Invalidate();
-		} // end of RestoreInitialImage
+
+            if(gooddata)
+            {
+                // Do default transformation here
+                BuildInitialCenterMatrix();
+            }            
+		}
 
 		bool GetNewData()
 		{
@@ -483,47 +493,70 @@ namespace asgn5v1
 
 		private void Transformer_Load(object sender, System.EventArgs e)
 		{
-			
 		}
 
 		private void toolBar1_ButtonClick(object sender, System.Windows.Forms.ToolBarButtonClickEventArgs e)
 		{
 			if (e.Button == transleftbtn)
 			{
+                ctrans = translate(ctrans, -50, 0);
 				Refresh();
 			}
 			if (e.Button == transrightbtn) 
 			{
+                ctrans = translate(ctrans, 50, 0);
 				Refresh();
 			}
 			if (e.Button == transupbtn)
 			{
+                ctrans = translate(ctrans, 0, -25);
 				Refresh();
 			}
 			
 			if(e.Button == transdownbtn)
 			{
+                ctrans = translate(ctrans, 0, 25);
 				Refresh();
 			}
 			if (e.Button == scaleupbtn) 
 			{
+                Point originalPosition = new Point(currentShapeMiddle.X, currentShapeMiddle.Y);
+                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y);
+                ctrans = scale(ctrans, 1.1);
+                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
 				Refresh();
 			}
 			if (e.Button == scaledownbtn) 
 			{
+                Point originalPosition = new Point(currentShapeMiddle.X, currentShapeMiddle.Y);
+                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y);
+                ctrans = scale(ctrans, 0.9);
+                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
 				Refresh();
 			}
 			if (e.Button == rotxby1btn) 
 			{
-				
+                Point originalPosition = new Point(currentShapeMiddle.X, currentShapeMiddle.Y);
+                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y);
+                ctrans = rotate(ctrans, 'x');
+                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
+                Refresh();
 			}
 			if (e.Button == rotyby1btn) 
 			{
-				
+                Point originalPosition = new Point(currentShapeMiddle.X, currentShapeMiddle.Y);
+                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y);
+                ctrans = rotate(ctrans, 'y');
+                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
+                Refresh();
 			}
 			if (e.Button == rotzby1btn) 
 			{
-				
+                Point originalPosition = new Point(currentShapeMiddle.X, currentShapeMiddle.Y);
+                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y);
+                ctrans = rotate(ctrans, 'z');
+                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
+                Refresh();
 			}
 
 			if (e.Button == rotxbtn) 
@@ -562,8 +595,193 @@ namespace asgn5v1
 
 		}
 
-		
-	}
+        private void BuildInitialCenterMatrix()
+        {
 
-	
+            // Begin by finding center of unmodified shape
+            double minShapeX = findMin(vertices, COL_X);
+            double maxShapeX = findMax(vertices, COL_X);
+            double minShapeY = findMin(vertices, COL_Y);
+            double maxShapeY = findMax(vertices, COL_Y);
+            double shapecenterX = ( minShapeX + maxShapeX ) / 2;
+            double shapecenterY = (minShapeY + maxShapeY) / 2;
+            double screenCenterX = this.Size.Width / 2.0;
+            double screenCenterY = this.Size.Height / 2.0;
+
+            // Translate center to 0,0
+            ctrans = translate(ctrans, -shapecenterX, -shapecenterY);
+            
+            // Reflect the shape
+            ctrans = reflect(ctrans, 'x');
+
+            // Scale it so that the height of the shape is Window.Height / 2
+            double scaleFinalSize = this.Size.Height / 2.0;
+            double currentShapeHeight = (findMax(vertices, 1) - findMin(vertices, 1));
+            double scalefactor = scaleFinalSize / currentShapeHeight;
+            ctrans = scale(ctrans, scalefactor);
+
+            // Reset current middle to 0,0 - Translate function sets mid point from here on out
+            currentShapeMiddle = new Point(0, 0);
+
+            // Translate to center of screen
+            ctrans = translate(ctrans, screenCenterX, screenCenterY);
+        }
+
+        #region Shape Manipulation Functions
+        private double[,] translate(double[,] ctran, double x, double y)
+        {
+            double[,] translationMatrix = new double[,]
+                        { 
+                            {1, 0, 0, 0},
+                            {0, 1, 0, 0},
+                            {0, 0, 1, 0},
+                            {x, y, 0, 1}
+                        };
+            currentShapeMiddle.X += (int)x;
+            currentShapeMiddle.Y += (int)y;
+            return multiply4x4Matrix(ctran, translationMatrix);
+        }
+
+        private double[,] reflect(double[,] ctrans, char axis = 'x')
+        {
+            //Default is x axis
+            double[,] reflectionMatrix = new double[,]
+                        { 
+                            {1, 0, 0, 0},
+                            {0, -1, 0, 0},
+                            {0, 0, 1, 0},
+                            {0, 0, 0, 1}
+                        };
+            if(axis.Equals('y'))
+            {
+                reflectionMatrix = new double[,]
+                        { 
+                            {-1, 0, 0, 0},
+                            { 0, 1, 0, 0},
+                            { 0, 0, 1, 0},
+                            { 0, 0, 0, 1}
+                        };
+            }
+            return multiply4x4Matrix(ctrans, reflectionMatrix);
+        }
+
+        private double[,] scale(double[,] ctrans, double factor)
+        {
+            double[,] scaleMatrix = new double[,]
+                        { 
+                            {factor,    0,      0,      0},
+                            {0,         factor, 0,      0},
+                            {0,         0,      factor, 0},
+                            {0,         0,      0,      1}
+                        };
+            return multiply4x4Matrix(ctrans, scaleMatrix);
+        }
+
+        private double[,] rotate(double[,] ctrans, char axis = 'x')
+        {
+            double rotationInRadians = 0.05;
+            // Default is x axis
+            double[,] rotationMatrix = new double[,]
+                        { 
+                            {1,    0,                           0,                              0},
+                            {0,    Math.Cos(rotationInRadians), Math.Sin(rotationInRadians),    0},
+                            {0,   -Math.Sin(rotationInRadians), Math.Cos(rotationInRadians),    0},
+                            {0,    0,                           0,                              1}
+                        };
+            if (axis == 'y')
+            {
+                rotationMatrix = new double[,]
+                        { 
+                            {Math.Cos(rotationInRadians),   0,      Math.Sin(rotationInRadians),    0},
+                            {0,                             1,      0,                              0},                            
+                            {-Math.Sin(rotationInRadians),  0,      Math.Cos(rotationInRadians),    0},
+                            {0,                             0,      0,                              1}
+                        };
+            }
+            if (axis == 'z')
+            {
+                rotationMatrix = new double[,]
+                        { 
+                            {Math.Cos(rotationInRadians),    Math.Sin(rotationInRadians),   0,  0},
+                            {-Math.Sin(rotationInRadians),   Math.Cos(rotationInRadians),   0,  0},
+                            {0,                              0,                             1,  0},
+                            {0,                              0,                             0,  1}
+                        };
+            }
+            return multiply4x4Matrix(ctrans, rotationMatrix);
+        }
+        #endregion
+
+        #region Helper Functions
+        private double findMin(double[,] points, int column)
+        {
+            double min = Double.MaxValue;
+            if (points.Length >= column + 1)
+            {
+                min = points[0, column];
+                if (points.Length >= (column + 1) * 2)
+                {
+                    for (int i = 1; i < points.Length / 4; ++i)
+                    {
+                        if (points[i, 0] == -1)
+                        {
+                            break;
+                        }
+                        if (points[i, column] < min)
+                        {
+                            min = points[i, column];
+                        }
+                    }
+                }
+            }
+            return min;
+        }
+
+        private double findMax(double[,] points, int column)
+        {
+            double max = Double.MinValue;
+            if (points.Length >= column + 1)
+            {
+                // At least 1 element
+                max = points[0, column];
+                if(points.Length >= (column + 1) * 2)
+                {
+                    // At least 1 element in the next row.
+                    for (int i = 1; i < points.Length / 4; ++i)
+                    {
+                        if (points[i, 0] == -1)
+                        {
+                            break;
+                        }
+                        if (points[i, column] > max)
+                        {
+                            max = points[i, column];
+                        }
+                    }
+                }
+                
+            }
+            return max;
+        }
+
+        private double[,] multiply4x4Matrix(double[,] matrix1, double[,] matrix2)
+        {
+            double[,] newTnet = new double[4, 4];
+            double temp;
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    temp = 0.0d;
+                    for (int k = 0; k < 4; k++)
+                    {
+                        temp += matrix1[i, k] * matrix2[k, j];
+                    }
+                    newTnet[i, j] = temp;
+                }
+            }
+            return newTnet;
+        }
+        #endregion
+    }
 }

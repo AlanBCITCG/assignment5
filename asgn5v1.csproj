@@ -102,6 +102,7 @@
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Content Include="Data and Demo\asgn5FullDemo.exe" />
     <EmbeddedResource Include="AboutDialogBox.resx">
       <DependentUpon>AboutDialogBox.cs</DependentUpon>
     </EmbeddedResource>
@@ -109,6 +110,16 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
     <Content Include="App.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Data and Demo\Blines3D.200810.dat" />
+    <None Include="Data and Demo\Bpoints3D.200810.dat" />
+    <None Include="Data and Demo\Qlines.200810.dat" />
+    <None Include="Data and Demo\Qlines3D.200810.dat" />
+    <None Include="Data and Demo\Qpoints.200810.dat" />
+    <None Include="Data and Demo\Qpoints3D.200810.dat" />
+    <None Include="Data and Demo\Tlines3D.200810.dat" />
+    <None Include="Data and Demo\Tpoints3D.200810.dat" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

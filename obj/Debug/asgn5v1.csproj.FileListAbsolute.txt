@@ -16,3 +16,11 @@ J:\COMP\4560\Assignments\Assignment5\asgn5\obj\Debug\asgn5v1.Transformer.resourc
 J:\COMP\4560\Assignments\Assignment5\asgn5\obj\Debug\asgn5v1.csproj.GenerateResource.Cache
 D:\SkyDrive\BCIT\COMP4560\assignment5\asgn5\obj\Debug\asgn5v1.exe
 D:\SkyDrive\BCIT\COMP4560\assignment5\asgn5\obj\Debug\asgn5v1.pdb
+D:\SkyDrive\BCIT\COMP4560\assignment5\asn5\obj\Debug\asgn5v1.exe
+D:\SkyDrive\BCIT\COMP4560\assignment5\asn5\obj\Debug\asgn5v1.pdb
+D:\SkyDrive\BCIT\COMP4560\assignment5\asn5\bin\Debug\asgn5v1.exe
+D:\SkyDrive\BCIT\COMP4560\assignment5\asn5\bin\Debug\asgn5v1.pdb
+D:\SkyDrive\BCIT\COMP4560\assignment5\asn5\obj\Debug\asgn5v1.csprojResolveAssemblyReference.cache
+D:\SkyDrive\BCIT\COMP4560\assignment5\asn5\obj\Debug\asgn5v1.AboutDialogBox.resources
+D:\SkyDrive\BCIT\COMP4560\assignment5\asn5\obj\Debug\asgn5v1.Transformer.resources
+D:\SkyDrive\BCIT\COMP4560\assignment5\asn5\obj\Debug\asgn5v1.csproj.GenerateResource.Cache
