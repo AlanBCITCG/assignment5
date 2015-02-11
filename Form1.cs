@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Data;
 using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace asgn5v1
 {
@@ -500,7 +501,10 @@ namespace asgn5v1
 			}
 
             // Do default transformation here
-            BuildInitialCenterMatrix();          
+            if (gooddata)
+            {
+                BuildInitialCenterMatrix();          
+            }            
 		}// end of setIdentity
       
 
@@ -690,6 +694,7 @@ namespace asgn5v1
                 ctrans = rotate(ctrans, 'z');
                 ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
                 this.Invoke((MethodInvoker)delegate { Refresh(); });
+                Thread.Sleep(20);
             }
         }
 
@@ -703,6 +708,7 @@ namespace asgn5v1
                 ctrans = rotate(ctrans, 'y');
                 ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
                 this.Invoke((MethodInvoker)delegate { Refresh(); });
+                Thread.Sleep(20);
             }
         }
 
@@ -716,6 +722,7 @@ namespace asgn5v1
                 ctrans = rotate(ctrans, 'x');
                 ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
                 this.Invoke((MethodInvoker)delegate { Refresh(); });
+                Thread.Sleep(20);
             }
         }
         #endregion
@@ -740,10 +747,10 @@ namespace asgn5v1
             //Default is x axis
             double[,] reflectionMatrix = new double[,]
                         { 
-                            {1, 0, 0, 0},
+                            {1,  0, 0, 0},
                             {0, -1, 0, 0},
-                            {0, 0, 1, 0},
-                            {0, 0, 0, 1}
+                            {0,  0, 1, 0},
+                            {0,  0, 0, 1}
                         };
             if(axis.Equals('y'))
             {
