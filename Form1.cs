@@ -54,12 +54,24 @@ namespace asgn5v1
         const int COL_Y = 1;
         const int COL_Z = 2;
 
+        BackgroundWorker bwRotateXContinous = new BackgroundWorker();
+        BackgroundWorker bwRotateYContinous = new BackgroundWorker();
+        BackgroundWorker bwRotateZContinous = new BackgroundWorker();
+
 		public Transformer()
 		{
 			//
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
+
+            bwRotateXContinous.DoWork += bwRotateXContinous_DoWork;
+            bwRotateYContinous.DoWork += bwRotateYContinous_DoWork;
+            bwRotateZContinous.DoWork += bwRotateZContinous_DoWork;
+
+            bwRotateXContinous.WorkerSupportsCancellation = true;
+            bwRotateYContinous.WorkerSupportsCancellation = true;
+            bwRotateZContinous.WorkerSupportsCancellation = true;
 
 			//
 			// TODO: Add any constructor code after InitializeComponent call
@@ -561,16 +573,37 @@ namespace asgn5v1
 
 			if (e.Button == rotxbtn) 
 			{
-				
+				if(bwRotateXContinous.IsBusy)
+                {
+                    bwRotateXContinous.CancelAsync();
+                }
+                else
+                {
+                    bwRotateXContinous.RunWorkerAsync();
+                }
 			}
 			if (e.Button == rotybtn) 
 			{
-				
+                if (bwRotateYContinous.IsBusy)
+                {
+                    bwRotateYContinous.CancelAsync();
+                }
+                else
+                {
+                    bwRotateYContinous.RunWorkerAsync();
+                }
 			}
 			
 			if (e.Button == rotzbtn) 
 			{
-				
+                if (bwRotateZContinous.IsBusy)
+                {
+                    bwRotateZContinous.CancelAsync();
+                }
+                else
+                {
+                    bwRotateZContinous.RunWorkerAsync();
+                }
 			}
 
 			if(e.Button == shearleftbtn)
@@ -605,6 +638,8 @@ namespace asgn5v1
             double maxShapeY = findMax(vertices, COL_Y);
             double shapecenterX = ( minShapeX + maxShapeX ) / 2;
             double shapecenterY = (minShapeY + maxShapeY) / 2;
+
+            // Find center of screen
             double screenCenterX = this.Size.Width / 2.0;
             double screenCenterY = this.Size.Height / 2.0;
 
@@ -626,6 +661,47 @@ namespace asgn5v1
             // Translate to center of screen
             ctrans = translate(ctrans, screenCenterX, screenCenterY);
         }
+
+        #region Continous Rotation Funcctions
+        void bwRotateZContinous_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            while (worker.CancellationPending == false)
+            {
+                Point originalPosition = new Point(currentShapeMiddle.X, currentShapeMiddle.Y);
+                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y);
+                ctrans = rotate(ctrans, 'z');
+                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
+                this.Invoke((MethodInvoker)delegate { Refresh(); });
+            }
+        }
+
+        void bwRotateYContinous_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            while (worker.CancellationPending == false)
+            {
+                Point originalPosition = new Point(currentShapeMiddle.X, currentShapeMiddle.Y);
+                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y);
+                ctrans = rotate(ctrans, 'y');
+                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
+                this.Invoke((MethodInvoker)delegate { Refresh(); });
+            }
+        }
+
+        void bwRotateXContinous_DoWork(object sender, DoWorkEventArgs e)
+        {
+            BackgroundWorker worker = sender as BackgroundWorker;
+            while (worker.CancellationPending == false)
+            {
+                Point originalPosition = new Point(currentShapeMiddle.X, currentShapeMiddle.Y);
+                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y);
+                ctrans = rotate(ctrans, 'x');
+                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
+                this.Invoke((MethodInvoker)delegate { Refresh(); });
+            }
+        }
+        #endregion
 
         #region Shape Manipulation Functions
         private double[,] translate(double[,] ctran, double x, double y)
@@ -723,7 +799,7 @@ namespace asgn5v1
                 {
                     for (int i = 1; i < points.Length / 4; ++i)
                     {
-                        if (points[i, 0] == -1)
+                        if (points[i, 0] == -1) // Sentinel stop value
                         {
                             break;
                         }
@@ -749,7 +825,7 @@ namespace asgn5v1
                     // At least 1 element in the next row.
                     for (int i = 1; i < points.Length / 4; ++i)
                     {
-                        if (points[i, 0] == -1)
+                        if (points[i, 0] == -1) // Sentinel stop value
                         {
                             break;
                         }
