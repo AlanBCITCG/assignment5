@@ -377,6 +377,7 @@ namespace asgn5v1
                         (int)scrnpts[lines[i, 1], 0], (int)scrnpts[lines[i, 1], 1]);
                 }
 
+                // Added to see where center of screen is.
                 grfx.FillRectangle(Brushes.Red, this.Size.Width / 2, this.Size.Height / 2, 3, 3);
             } // end of gooddata block	
 		} // end of OnPaint
@@ -402,12 +403,7 @@ namespace asgn5v1
 		void RestoreInitialImage()
 		{
 			Invalidate();
-
-            if(gooddata)
-            {
-                // Do default transformation here
-                BuildInitialCenterMatrix();
-            }            
+            setIdentity(ctrans, 4, 4);
 		}
 
 		bool GetNewData()
@@ -502,6 +498,9 @@ namespace asgn5v1
 				for (int j = 0; j < ncol; j++) A[i,j] = 0.0d;
 				A[i,i] = 1.0d;
 			}
+
+            // Do default transformation here
+            BuildInitialCenterMatrix();          
 		}// end of setIdentity
       
 
