@@ -53,6 +53,7 @@ namespace asgn5v1
         const int COL_X = 0;
         const int COL_Y = 1;
         const int COL_Z = 2;
+        double shearBaselineHeight;
 
         BackgroundWorker bwRotateXContinous = new BackgroundWorker();
         BackgroundWorker bwRotateYContinous = new BackgroundWorker();
@@ -326,6 +327,7 @@ namespace asgn5v1
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
             this.ClientSize = new System.Drawing.Size(508, 306);
             this.Controls.Add(this.toolBar1);
+            this.DoubleBuffered = true;
             this.Name = "Transformer";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.Transformer_Load);
@@ -608,11 +610,17 @@ namespace asgn5v1
 
 			if(e.Button == shearleftbtn)
 			{
+                ctrans = translate(ctrans, 0, -shearBaselineHeight);
+                ctrans = shear(ctrans, 'l', 10);
+                ctrans = translate(ctrans, 0, shearBaselineHeight);
 				Refresh();
 			}
 
 			if (e.Button == shearrightbtn) 
 			{
+                ctrans = translate(ctrans, 0, -shearBaselineHeight);
+                ctrans = shear(ctrans, 'r', 10);
+                ctrans = translate(ctrans, 0, shearBaselineHeight);
 				Refresh();
 			}
 
@@ -639,13 +647,17 @@ namespace asgn5v1
             double shapecenterX = ( minShapeX + maxShapeX ) / 2;
             double shapecenterY = (minShapeY + maxShapeY) / 2;
 
+            // Start keeping track of the baseline to return to for shearing
+            shearBaselineHeight = maxShapeY - minShapeY;
+
             // Find center of screen
             double screenCenterX = this.Size.Width / 2.0;
             double screenCenterY = this.Size.Height / 2.0;
 
             // Translate center to 0,0
             ctrans = translate(ctrans, -shapecenterX, -shapecenterY);
-            
+            shearBaselineHeight += -shapecenterY;
+
             // Reflect the shape
             ctrans = reflect(ctrans, 'x');
 
@@ -655,11 +667,17 @@ namespace asgn5v1
             double scalefactor = scaleFinalSize / currentShapeHeight;
             ctrans = scale(ctrans, scalefactor);
 
+            // Keep track of height after scaling
+            shearBaselineHeight *= scalefactor;
+
             // Reset current middle to 0,0 - Translate function sets mid point from here on out
             currentShapeMiddle = new Point(0, 0);
 
             // Translate to center of screen
             ctrans = translate(ctrans, screenCenterX, screenCenterY);
+
+            // Final time we have to keep track of the shear height
+            shearBaselineHeight += screenCenterY;
         }
 
         #region Continous Rotation Funcctions
@@ -785,6 +803,29 @@ namespace asgn5v1
                         };
             }
             return multiply4x4Matrix(ctrans, rotationMatrix);
+        }
+
+        private double[,] shear(double[,] ctrans, char direction = 'r', double factorInPercentage = 10)
+        {
+            double factor;
+            if (direction == 'l')
+            {
+                //factor = -(1 - (factorInPercentage / 100));
+                factor = 0.1;
+            }
+            else
+            {
+                //factor = 1 + (factorInPercentage / 100);
+                factor = -0.1;
+            }
+            double[,] shearMatrix = new double[,]
+                        { 
+                            {1,         0,      0,      0},
+                            {factor,    1,      0,      0},
+                            {0,         0,      1,      0},
+                            {0,         0,      0,      1}
+                        };
+            return multiply4x4Matrix(ctrans, shearMatrix);
         }
         #endregion
 
