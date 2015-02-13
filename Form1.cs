@@ -20,6 +20,20 @@ namespace asgn5v1
 
 		// basic data for Transformer
 
+        public struct Coords
+        {
+            public double X { get; set; }
+            public double Y { get; set; }
+            public double Z { get; set; }
+
+            public Coords(double in_X, double in_Y, double in_Z) : this()
+            {
+                this.X = in_X;
+                this.Y = in_Y;
+                this.Z = in_Z;
+            }
+        }
+
 		int numpts = 0;
 		int numlines = 0;
 		bool gooddata = false;		
@@ -50,7 +64,7 @@ namespace asgn5v1
 		private System.Windows.Forms.ToolBarButton resetbtn;
 		private System.Windows.Forms.ToolBarButton exitbtn;
 		int[,] lines;
-        Point currentShapeMiddle = new Point(0, 0);
+        Coords currentShapeMiddle = new Coords();
         const int COL_X = 0;
         const int COL_Y = 1;
         const int COL_Z = 2;
@@ -66,7 +80,7 @@ namespace asgn5v1
 			// Required for Windows Form Designer support
 			//
 			InitializeComponent();
-
+            
             bwRotateXContinous.DoWork += bwRotateXContinous_DoWork;
             bwRotateYContinous.DoWork += bwRotateYContinous_DoWork;
             bwRotateZContinous.DoWork += bwRotateZContinous_DoWork;
@@ -515,63 +529,63 @@ namespace asgn5v1
 		{
 			if (e.Button == transleftbtn)
 			{
-                ctrans = translate(ctrans, -50, 0);
+                ctrans = translate(ctrans, -50, 0, 0);
 				Refresh();
 			}
 			if (e.Button == transrightbtn) 
 			{
-                ctrans = translate(ctrans, 50, 0);
+                ctrans = translate(ctrans, 50, 0, 0);
 				Refresh();
 			}
 			if (e.Button == transupbtn)
 			{
-                ctrans = translate(ctrans, 0, -25);
+                ctrans = translate(ctrans, 0, -25, 0);
 				Refresh();
 			}
 			
 			if(e.Button == transdownbtn)
 			{
-                ctrans = translate(ctrans, 0, 25);
+                ctrans = translate(ctrans, 0, 25, 0);
 				Refresh();
 			}
 			if (e.Button == scaleupbtn) 
 			{
-                Point originalPosition = new Point(currentShapeMiddle.X, currentShapeMiddle.Y);
-                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y);
+                Coords originalPosition = new Coords(currentShapeMiddle.X, currentShapeMiddle.Y, currentShapeMiddle.Z);
+                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y, -originalPosition.Z);
                 ctrans = scale(ctrans, 1.1);
-                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
+                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y, originalPosition.Z);
 				Refresh();
 			}
 			if (e.Button == scaledownbtn) 
 			{
-                Point originalPosition = new Point(currentShapeMiddle.X, currentShapeMiddle.Y);
-                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y);
+                Coords originalPosition = new Coords(currentShapeMiddle.X, currentShapeMiddle.Y, currentShapeMiddle.Z);
+                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y, -originalPosition.Z);
                 ctrans = scale(ctrans, 0.9);
-                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
+                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y, originalPosition.Z);
 				Refresh();
 			}
 			if (e.Button == rotxby1btn) 
 			{
-                Point originalPosition = new Point(currentShapeMiddle.X, currentShapeMiddle.Y);
-                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y);
+                Coords originalPosition = new Coords(currentShapeMiddle.X, currentShapeMiddle.Y, currentShapeMiddle.Z);
+                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y, -originalPosition.Z);
                 ctrans = rotate(ctrans, 'x');
-                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
+                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y, originalPosition.Z);
                 Refresh();
 			}
 			if (e.Button == rotyby1btn) 
 			{
-                Point originalPosition = new Point(currentShapeMiddle.X, currentShapeMiddle.Y);
-                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y);
+                Coords originalPosition = new Coords(currentShapeMiddle.X, currentShapeMiddle.Y, currentShapeMiddle.Z);
+                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y, -originalPosition.Z);
                 ctrans = rotate(ctrans, 'y');
-                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
+                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y, originalPosition.Z);
                 Refresh();
 			}
 			if (e.Button == rotzby1btn) 
 			{
-                Point originalPosition = new Point(currentShapeMiddle.X, currentShapeMiddle.Y);
-                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y);
+                Coords originalPosition = new Coords(currentShapeMiddle.X, currentShapeMiddle.Y, currentShapeMiddle.Z);
+                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y, -originalPosition.Z);
                 ctrans = rotate(ctrans, 'z');
-                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
+                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y, originalPosition.Z);
                 Refresh();
 			}
 
@@ -612,17 +626,17 @@ namespace asgn5v1
 
 			if(e.Button == shearleftbtn)
 			{
-                ctrans = translate(ctrans, 0, -shearBaselineHeight);
-                ctrans = shear(ctrans, 'l', 10);
-                ctrans = translate(ctrans, 0, shearBaselineHeight);
+                ctrans = translate(ctrans, 0, -shearBaselineHeight, 0);
+                ctrans = shear2D(ctrans, 'l', 10);
+                ctrans = translate(ctrans, 0, shearBaselineHeight, 0);
 				Refresh();
 			}
 
 			if (e.Button == shearrightbtn) 
 			{
-                ctrans = translate(ctrans, 0, -shearBaselineHeight);
-                ctrans = shear(ctrans, 'r', 10);
-                ctrans = translate(ctrans, 0, shearBaselineHeight);
+                ctrans = translate(ctrans, 0, -shearBaselineHeight, 0);
+                ctrans = shear2D(ctrans, 'r', 10);
+                ctrans = translate(ctrans, 0, shearBaselineHeight, 0);
 				Refresh();
 			}
 
@@ -643,7 +657,7 @@ namespace asgn5v1
 
             double shapecenterX = findMidPoint(vertices, COL_X);
             double shapecenterY = findMidPoint(vertices, COL_Y);
-
+            double shapecenterZ = findMidPoint(vertices, COL_Z);
             // Reflect the shape
             ctrans = reflect(ctrans, 'x');
 
@@ -653,7 +667,7 @@ namespace asgn5v1
             double screenCenterY = this.Size.Height / 2.0;
 
             // Translate center to 0,0
-            ctrans = translate(ctrans, -shapecenterX, shapecenterY);
+            ctrans = translate(ctrans, -shapecenterX, shapecenterY, -shapecenterZ);
             
             // Start keeping track of its height (previously negative due to reflection)
             shearBaselineHeight += shapecenterY;
@@ -670,10 +684,10 @@ namespace asgn5v1
             shearBaselineHeight *= scalefactor;
 
             // Reset current middle to 0,0 - Translate function sets mid point from here on out
-            currentShapeMiddle = new Point(0, 0);
+            currentShapeMiddle = new Coords(0, 0, 0);
 
             // Translate to center of screen
-            ctrans = translate(ctrans, screenCenterX, screenCenterY);
+            ctrans = translate(ctrans, screenCenterX, screenCenterY, 0);
 
             // Final time we have to keep track of the shear height
             shearBaselineHeight += screenCenterY;
@@ -685,10 +699,10 @@ namespace asgn5v1
             BackgroundWorker worker = sender as BackgroundWorker;
             while (worker.CancellationPending == false)
             {
-                Point originalPosition = new Point(currentShapeMiddle.X, currentShapeMiddle.Y);
-                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y);
+                Coords originalPosition = new Coords(currentShapeMiddle.X, currentShapeMiddle.Y, currentShapeMiddle.Z);
+                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y, -currentShapeMiddle.Z);
                 ctrans = rotate(ctrans, 'z');
-                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
+                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y, currentShapeMiddle.Z);
                 this.Invoke((MethodInvoker)delegate { Refresh(); });
                 Thread.Sleep(20);
             }
@@ -699,10 +713,10 @@ namespace asgn5v1
             BackgroundWorker worker = sender as BackgroundWorker;
             while (worker.CancellationPending == false)
             {
-                Point originalPosition = new Point(currentShapeMiddle.X, currentShapeMiddle.Y);
-                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y);
+                Coords originalPosition = new Coords(currentShapeMiddle.X, currentShapeMiddle.Y, currentShapeMiddle.Z);
+                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y, -originalPosition.Z);
                 ctrans = rotate(ctrans, 'y');
-                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
+                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y, originalPosition.Z);
                 this.Invoke((MethodInvoker)delegate { Refresh(); });
                 Thread.Sleep(20);
             }
@@ -713,10 +727,10 @@ namespace asgn5v1
             BackgroundWorker worker = sender as BackgroundWorker;
             while (worker.CancellationPending == false)
             {
-                Point originalPosition = new Point(currentShapeMiddle.X, currentShapeMiddle.Y);
-                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y);
+                Coords originalPosition = new Coords(currentShapeMiddle.X, currentShapeMiddle.Y, currentShapeMiddle.Z);
+                ctrans = translate(ctrans, -originalPosition.X, -originalPosition.Y, -originalPosition.Z);
                 ctrans = rotate(ctrans, 'x');
-                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y);
+                ctrans = translate(ctrans, originalPosition.X, originalPosition.Y, originalPosition.Z);
                 this.Invoke((MethodInvoker)delegate { Refresh(); });
                 Thread.Sleep(20);
             }
@@ -724,17 +738,18 @@ namespace asgn5v1
         #endregion
 
         #region Shape Manipulation Functions
-        private double[,] translate(double[,] ctran, double x, double y)
+        private double[,] translate(double[,] ctran, double x, double y, double z)
         {
             double[,] translationMatrix = new double[,]
                         { 
                             {1, 0, 0, 0},
                             {0, 1, 0, 0},
                             {0, 0, 1, 0},
-                            {x, y, 0, 1}
+                            {x, y, z, 1}
                         };
             currentShapeMiddle.X += (int)x;
             currentShapeMiddle.Y += (int)y;
+            currentShapeMiddle.Z += (int)z;
             return multiply4x4Matrix(ctran, translationMatrix);
         }
 
@@ -758,6 +773,17 @@ namespace asgn5v1
                             { 0, 0, 0, 1}
                         };
             }
+            //  Unsure
+            //if (axis.Equals('z'))
+            //{
+            //    reflectionMatrix = new double[,]
+            //            { 
+            //                { 1, 0, 0, 0},
+            //                { 0, 1, 0, 0},
+            //                { 0, 0,-1, 0},
+            //                { 0, 0, 0, 1}
+            //            };
+            //}
             return multiply4x4Matrix(ctrans, reflectionMatrix);
         }
 
@@ -772,6 +798,7 @@ namespace asgn5v1
                         };
             return multiply4x4Matrix(ctrans, scaleMatrix);
         }
+
 
         private double[,] rotate(double[,] ctrans, char axis = 'x')
         {
@@ -807,7 +834,7 @@ namespace asgn5v1
             return multiply4x4Matrix(ctrans, rotationMatrix);
         }
 
-        private double[,] shear(double[,] ctrans, char direction = 'r', double factorInPercentage = 10)
+        private double[,] shear2D(double[,] ctrans, char direction = 'r', double factorInPercentage = 10)
         {
             double factor;
             if (direction == 'l')
@@ -826,6 +853,29 @@ namespace asgn5v1
                             {factor,    1,      0,      0},
                             {0,         0,      1,      0},
                             {0,         0,      0,      1}
+                        };
+            return multiply4x4Matrix(ctrans, shearMatrix);
+        }
+
+        private double[,] shear3D(double[,] ctrans, char direction = 'r', double factorInPercentage = 10)
+        {
+            double factor;
+            if (direction == 'l')
+            {
+                //factor = -(1 - (factorInPercentage / 100));
+                factor = 0.1;
+            }
+            else
+            {
+                //factor = 1 + (factorInPercentage / 100);
+                factor = -0.1;
+            }
+            double[,] shearMatrix = new double[,]
+                        { 
+                            {1,         0,      factor,        0},
+                            {0,         1,      factor,        0},
+                            {0,         0,      1,             0},
+                            {0,         0,      0,             1}
                         };
             return multiply4x4Matrix(ctrans, shearMatrix);
         }
