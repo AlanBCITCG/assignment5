@@ -687,7 +687,7 @@ namespace asgn5v1
             currentShapeMiddle = new Coords(0, 0, 0);
 
             // Translate to center of screen
-            ctrans = translate(ctrans, screenCenterX, screenCenterY, 0);
+            ctrans = translate(ctrans, screenCenterX, screenCenterY, shapecenterZ);
 
             // Final time we have to keep track of the shear height
             shearBaselineHeight += screenCenterY;
