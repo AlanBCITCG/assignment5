@@ -626,17 +626,19 @@ namespace asgn5v1
 
 			if(e.Button == shearleftbtn)
 			{
-                ctrans = translate(ctrans, 0, -shearBaselineHeight, 0);
+                double shearheight = shearBaselineHeight;
+                ctrans = translate(ctrans, 0, -shearheight, 0);
                 ctrans = shear2D(ctrans, 'l', 10);
-                ctrans = translate(ctrans, 0, shearBaselineHeight, 0);
+                ctrans = translate(ctrans, 0, shearheight, 0);
 				Refresh();
 			}
 
 			if (e.Button == shearrightbtn) 
 			{
-                ctrans = translate(ctrans, 0, -shearBaselineHeight, 0);
+                double shearheight = shearBaselineHeight;
+                ctrans = translate(ctrans, 0, -shearheight, 0);
                 ctrans = shear2D(ctrans, 'r', 10);
-                ctrans = translate(ctrans, 0, shearBaselineHeight, 0);
+                ctrans = translate(ctrans, 0, shearheight, 0);
 				Refresh();
 			}
 
@@ -670,7 +672,7 @@ namespace asgn5v1
             ctrans = translate(ctrans, -shapecenterX, shapecenterY, -shapecenterZ);
             
             // Start keeping track of its height (previously negative due to reflection)
-            shearBaselineHeight += shapecenterY;
+            shearBaselineHeight = shapecenterY;
 
 
 
@@ -681,7 +683,7 @@ namespace asgn5v1
             ctrans = scale(ctrans, scalefactor);
 
             // Keep track of height after scaling
-            shearBaselineHeight *= scalefactor;
+            //shearBaselineHeight *= scalefactor;
 
             // Reset current middle to 0,0 - Translate function sets mid point from here on out
             currentShapeMiddle = new Coords(0, 0, 0);
@@ -690,7 +692,7 @@ namespace asgn5v1
             ctrans = translate(ctrans, screenCenterX, screenCenterY, shapecenterZ);
 
             // Final time we have to keep track of the shear height
-            shearBaselineHeight += screenCenterY;
+            //shearBaselineHeight += screenCenterY;
         }
 
         #region Continous Rotation Funcctions
@@ -750,6 +752,7 @@ namespace asgn5v1
             currentShapeMiddle.X += (int)x;
             currentShapeMiddle.Y += (int)y;
             currentShapeMiddle.Z += (int)z;
+            shearBaselineHeight += y;
             return multiply4x4Matrix(ctran, translationMatrix);
         }
 
@@ -796,6 +799,7 @@ namespace asgn5v1
                             {0,         0,      factor, 0},
                             {0,         0,      0,      1}
                         };
+            shearBaselineHeight *= factor;
             return multiply4x4Matrix(ctrans, scaleMatrix);
         }
 
