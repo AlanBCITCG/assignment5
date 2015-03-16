@@ -32,3 +32,11 @@ C:\Users\Alan\OneDrive\BCIT\COMP4560\assignment5\asn5\obj\Debug\asgn5v1.csprojRe
 C:\Users\Alan\OneDrive\BCIT\COMP4560\assignment5\asn5\obj\Debug\asgn5v1.AboutDialogBox.resources
 C:\Users\Alan\OneDrive\BCIT\COMP4560\assignment5\asn5\obj\Debug\asgn5v1.Transformer.resources
 C:\Users\Alan\OneDrive\BCIT\COMP4560\assignment5\asn5\obj\Debug\asgn5v1.csproj.GenerateResource.Cache
+E:\Visual Studio Projects\BCIT\CG_asn5\obj\Debug\asgn5v1.exe
+E:\Visual Studio Projects\BCIT\CG_asn5\obj\Debug\asgn5v1.pdb
+E:\Visual Studio Projects\BCIT\CG_asn5\bin\Debug\asgn5v1.exe
+E:\Visual Studio Projects\BCIT\CG_asn5\bin\Debug\asgn5v1.pdb
+E:\Visual Studio Projects\BCIT\CG_asn5\obj\Debug\asgn5v1.csprojResolveAssemblyReference.cache
+E:\Visual Studio Projects\BCIT\CG_asn5\obj\Debug\asgn5v1.AboutDialogBox.resources
+E:\Visual Studio Projects\BCIT\CG_asn5\obj\Debug\asgn5v1.Transformer.resources
+E:\Visual Studio Projects\BCIT\CG_asn5\obj\Debug\asgn5v1.csproj.GenerateResource.Cache

@@ -591,6 +591,14 @@ namespace asgn5v1
 
 			if (e.Button == rotxbtn) 
 			{
+                if(bwRotateYContinous.IsBusy)
+                {
+                    bwRotateYContinous.CancelAsync();
+                }
+                if(bwRotateZContinous.IsBusy)
+                {
+                    bwRotateZContinous.CancelAsync();
+                }
 				if(bwRotateXContinous.IsBusy)
                 {
                     bwRotateXContinous.CancelAsync();
@@ -602,6 +610,14 @@ namespace asgn5v1
 			}
 			if (e.Button == rotybtn) 
 			{
+                if (bwRotateXContinous.IsBusy)
+                {
+                    bwRotateXContinous.CancelAsync();
+                }
+                if (bwRotateZContinous.IsBusy)
+                {
+                    bwRotateZContinous.CancelAsync();
+                }
                 if (bwRotateYContinous.IsBusy)
                 {
                     bwRotateYContinous.CancelAsync();
@@ -614,6 +630,14 @@ namespace asgn5v1
 			
 			if (e.Button == rotzbtn) 
 			{
+                if (bwRotateXContinous.IsBusy)
+                {
+                    bwRotateXContinous.CancelAsync();
+                }
+                if (bwRotateYContinous.IsBusy)
+                {
+                    bwRotateYContinous.CancelAsync();
+                }
                 if (bwRotateZContinous.IsBusy)
                 {
                     bwRotateZContinous.CancelAsync();
